@@ -65,8 +65,12 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
   return (
     <div className="flex gap-3 max-w-[88%] my-2 items-start">
       {/* AI Avatar */}
-      <div className="w-8 h-8 rounded-full bg-[#2563eb] text-white shrink-0 flex items-center justify-center text-xs font-bold shadow-2xs">
-        AI
+      <div className="w-8 h-8 rounded-xl overflow-hidden shadow-2xs border border-slate-200/80 bg-slate-900 flex items-center justify-center shrink-0">
+        <img
+          src="/chimobi_logo.jpg"
+          alt="Chimobi Logo"
+          className="w-full h-full object-cover"
+        />
       </div>
 
       {/* AI Bubble & Metadata */}

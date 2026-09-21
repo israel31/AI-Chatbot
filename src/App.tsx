@@ -438,69 +438,21 @@ export default function App() {
         {/* Chat Viewport */}
         <div className="flex-1 overflow-y-auto px-4 sm:px-12 md:px-16 py-6 flex flex-col gap-5 custom-scrollbar">
           {messages.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center my-auto py-8">
-              <div className="w-12 h-12 rounded-xl bg-slate-900 text-white flex items-center justify-center mb-4 shadow-sm">
-                <Lock className="w-6 h-6 text-emerald-400" />
+            <div className="flex-1 flex flex-col items-center justify-center text-center my-auto py-12">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-900 mb-5 flex items-center justify-center transition-transform hover:scale-105">
+                <img
+                  src="/chimobi_logo.jpg"
+                  alt="Chimobi Logo"
+                  className="w-full h-full object-cover"
+                />
               </div>
 
-              <h2 className="text-xl font-bold text-slate-900 tracking-tight">
-                DocuGuard Internal Documentation AI
+              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                Chimobi
               </h2>
-              <p className="text-[13.5px] text-slate-500 max-w-md mt-1.5 leading-relaxed">
-                Query internal policies, SOC 2 protocols, engineering guidelines, and employee benefits with 100% verified citations.
+              <p className="text-[15px] text-slate-500 max-w-sm mt-2 leading-relaxed font-medium">
+                How can I help you today?
               </p>
-
-              {/* Guarantees Box */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-6 max-w-2xl w-full text-left">
-                <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-900 mb-1">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                    <span>Air-Gapped Docs</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Zero web crawling. Strictly confined to verified company records.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-900 mb-1">
-                    <FileText className="w-4 h-4 text-[#2563eb]" />
-                    <span>Direct Citations</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Every answer references exact policy sections and quoted excerpts.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-white border border-slate-200 shadow-2xs">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-900 mb-1">
-                    <ShieldAlert className="w-4 h-4 text-rose-600" />
-                    <span>Strict Refusal</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">
-                    Explicitly states when info is missing from internal records.
-                  </p>
-                </div>
-              </div>
-
-              {/* Quick Policy Badges */}
-              <div className="w-full max-w-2xl">
-                <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                  Preloaded Knowledge Base ({documents.length} Records)
-                </div>
-                <div className="flex flex-wrap justify-center gap-1.5">
-                  {documents.map(doc => (
-                    <button
-                      key={doc.id}
-                      onClick={() => handleViewDoc(doc.id)}
-                      className="text-xs bg-white hover:bg-slate-50 text-slate-700 hover:text-[#2563eb] border border-slate-200 rounded-md px-2.5 py-1 transition-colors flex items-center gap-1.5 shadow-2xs group"
-                    >
-                      <FileText className="w-3 h-3 text-slate-400 group-hover:text-[#2563eb]" />
-                      <span className="font-medium">{doc.title.split(',')[0]}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           ) : (
             <div className="space-y-4 max-w-4xl w-full mx-auto">
@@ -516,12 +468,16 @@ export default function App() {
 
               {isLoading && (
                 <div className="flex gap-3 max-w-[85%] items-start my-2">
-                  <div className="w-8 h-8 rounded-full bg-[#2563eb] text-white shrink-0 flex items-center justify-center text-xs font-bold shadow-2xs">
-                    AI
+                  <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs border border-slate-200/80 bg-slate-900 flex items-center justify-center shrink-0">
+                    <img
+                      src="/chimobi_logo.jpg"
+                      alt="Chimobi Logo"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs flex items-center gap-3 text-xs text-slate-600">
+                  <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-3 text-xs text-slate-600">
                     <Loader2 className="w-4 h-4 text-[#2563eb] animate-spin shrink-0" />
-                    <span>Searching verified company records and formulating grounded response...</span>
+                    <span>Chimobi is thinking...</span>
                   </div>
                 </div>
               )}
@@ -530,41 +486,43 @@ export default function App() {
           )}
         </div>
 
-        {/* Preset Benchmark Drawer */}
-        <PresetQueries
-          onSelectQuery={q => {
-            setInputQuery(q);
-            handleSendQuery(q);
-          }}
-          disabled={isLoading}
-        />
+        {/* Preset Benchmark Drawer (Admin view only) */}
+        {isAdmin && (
+          <PresetQueries
+            onSelectQuery={q => {
+              setInputQuery(q);
+              handleSendQuery(q);
+            }}
+            disabled={isLoading}
+          />
+        )}
 
-        {/* Floating Input Area */}
-        <div className="px-4 sm:px-12 md:px-16 pt-2 pb-4 bg-gradient-to-t from-[#f8fafc] via-[#f8fafc]/95 to-transparent shrink-0">
+        {/* Floating Input Area (Chatbox) */}
+        <div className="px-4 sm:px-12 md:px-16 pt-2 pb-6 bg-gradient-to-t from-[#f8fafc] via-[#f8fafc]/95 to-transparent shrink-0">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white border border-slate-200 rounded-2xl p-2 sm:p-2.5 flex items-center gap-3 shadow-[0_4px_12px_rgba(0,0,0,0.03)] focus-within:border-slate-300 focus-within:ring-2 focus-within:ring-[#2563eb]/20 transition-all">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-2 sm:p-2.5 flex items-center gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.04)] focus-within:border-[#2563eb]/40 focus-within:ring-4 focus-within:ring-[#2563eb]/10 transition-all">
               <textarea
                 ref={inputRef}
                 id="query-input"
                 value={inputQuery}
                 onChange={e => setInputQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask a question about internal docs..."
+                placeholder="Ask Chimobi..."
                 rows={1}
                 disabled={isLoading}
-                className="flex-1 bg-transparent border-none outline-none text-[14.5px] text-slate-800 placeholder-slate-400 resize-none px-2 py-1 leading-relaxed custom-scrollbar"
+                className="flex-1 bg-transparent border-none outline-none text-[15px] text-slate-800 placeholder-slate-400 resize-none px-3 py-1.5 leading-relaxed custom-scrollbar"
               />
 
               <button
                 id="send-query-btn"
                 onClick={() => handleSendQuery(inputQuery)}
                 disabled={!inputQuery.trim() || isLoading}
-                className={`px-4 py-2 rounded-lg text-white font-semibold text-xs sm:text-[13px] transition-all flex items-center gap-1.5 shrink-0 ${
+                className={`px-4 py-2.5 rounded-xl text-white font-semibold text-xs sm:text-[13px] transition-all flex items-center gap-1.5 shrink-0 ${
                   !inputQuery.trim() || isLoading
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                    : 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-2xs cursor-pointer'
+                    : 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-xs cursor-pointer'
                 }`}
-                title="Send question (Enter)"
+                title="Send message (Enter)"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -575,11 +533,6 @@ export default function App() {
                   </>
                 )}
               </button>
-            </div>
-
-            {/* Bottom Warning / Security Notice Box */}
-            <div className="mt-2 text-center text-[10.5px] font-semibold text-slate-400 uppercase tracking-widest">
-              Only internal sources are used for this response. Security audited.
             </div>
           </div>
         </div>

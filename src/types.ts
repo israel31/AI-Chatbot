@@ -1,7 +1,7 @@
 export interface DocumentItem {
   id: string;
   title: string;
-  category: 'HR & Benefits' | 'Security & Compliance' | 'Engineering' | 'Finance & Travel' | 'Operations' | 'Product' | 'Custom';
+  category: string;
   lastUpdated: string;
   version: string;
   author: string;

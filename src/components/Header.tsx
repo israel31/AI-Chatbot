@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, BookOpen, Lock, PlusCircle, AlertCircle, Sparkles, CheckCircle2, RotateCcw, Menu } from 'lucide-react';
+import { PlusCircle, AlertCircle, CheckCircle2, Menu, Trash2 } from 'lucide-react';
 
 interface HeaderProps {
   docCount: number;
@@ -33,8 +33,8 @@ export const Header: React.FC<HeaderProps> = ({
   isAdmin,
 }) => {
   return (
-    <header className="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shrink-0">
-      {/* Left: Secure Mode Badge & Context */}
+    <header className="h-16 border-b border-slate-200/80 bg-white/90 backdrop-blur-md flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30 shrink-0 shadow-2xs">
+      {/* Left: Logo & Name "Chimobi" */}
       <div className="flex items-center gap-3">
         {onToggleMobileSidebar && isAdmin && (
           <button
@@ -46,72 +46,80 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        <div className="flex items-center gap-2.5">
-          <span className="source-badge">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            SECURE MODE
-          </span>
-          <span className="text-xs sm:text-[13px] text-slate-500 hidden sm:inline truncate max-w-xs md:max-w-md">
-            Context: <span className="font-medium text-slate-700">{activeContextName || (selectedDocCount === docCount ? `All ${docCount} Internal Policies` : `${selectedDocCount} Policies Selected`)}</span>
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs border border-slate-200/80 bg-slate-900 flex items-center justify-center shrink-0">
+            <img
+              src="/chimobi_logo.jpg"
+              alt="Chimobi Logo"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // Fallback to stylized SVG icon if image is loading
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+          </div>
+          <span className="font-extrabold text-xl tracking-tight text-slate-900">
+            Chimobi
           </span>
         </div>
       </div>
 
-      {/* Right: Clean Action Controls */}
+      {/* Right: Actions */}
       <div className="flex items-center gap-3 sm:gap-4">
-        {/* Strict Grounding Toggle */}
+        {/* Admin Controls */}
         {isAdmin && (
-          <button
-            id="toggle-strictness-mode"
-            onClick={onToggleStrictMode}
-            className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md font-medium transition-colors border ${
-              strictMode
-                ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
-                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-            }`}
-            title="Toggle strict air-gapped grounding refusal"
-          >
-            <CheckCircle2 className={`w-3.5 h-3.5 ${strictMode ? 'text-emerald-400' : 'text-slate-400'}`} />
-            <span className="hidden sm:inline">Strict Grounding:</span>
-            <span>{strictMode ? 'Enforced' : 'Standard'}</span>
-          </button>
+          <>
+            <button
+              id="toggle-strictness-mode"
+              onClick={onToggleStrictMode}
+              className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md font-medium transition-colors border ${
+                strictMode
+                  ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
+                  : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+              }`}
+              title="Toggle strict air-gapped grounding refusal"
+            >
+              <CheckCircle2 className={`w-3.5 h-3.5 ${strictMode ? 'text-emerald-400' : 'text-slate-400'}`} />
+              <span className="hidden sm:inline">Strict:</span>
+              <span>{strictMode ? 'Enforced' : 'Standard'}</span>
+            </button>
+
+            {gapCount > 0 && (
+              <button
+                id="header-gaps-btn"
+                onClick={onOpenGapLog}
+                className="text-xs sm:text-[13px] text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-1 transition-colors"
+              >
+                <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                <span>Doc Gaps ({gapCount})</span>
+              </button>
+            )}
+
+            <button
+              id="add-doc-quick-btn"
+              onClick={onOpenAddDoc}
+              className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-[#2563eb] text-white hover:bg-[#1d4ed8] font-medium transition-colors shadow-2xs"
+            >
+              <PlusCircle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">New Policy</span>
+            </button>
+          </>
         )}
 
-        {/* Clear Session */}
+        {/* Clear Session button when messages exist */}
         {hasMessages && (
           <button
             id="clear-session-header-btn"
             onClick={onClearSession}
-            className="text-xs sm:text-[13px] text-[#2563eb] hover:text-[#1d4ed8] font-medium cursor-pointer transition-colors"
+            className="inline-flex items-center gap-1 text-xs sm:text-[13px] text-slate-500 hover:text-rose-600 font-medium cursor-pointer transition-colors px-2 py-1 rounded-md hover:bg-slate-100"
+            title="Clear Chat History"
           >
-            Clear Session
-          </button>
-        )}
-
-        {/* Gaps Link */}
-        {isAdmin && gapCount > 0 && (
-          <button
-            id="header-gaps-btn"
-            onClick={onOpenGapLog}
-            className="text-xs sm:text-[13px] text-slate-500 hover:text-slate-800 cursor-pointer flex items-center gap-1 transition-colors"
-          >
-            <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
-            <span>Doc Gaps ({gapCount})</span>
-          </button>
-        )}
-
-        {/* Add Policy / Quick Button for small screens */}
-        {isAdmin && (
-          <button
-            id="add-doc-quick-btn"
-            onClick={onOpenAddDoc}
-            className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-[#2563eb] text-white hover:bg-[#1d4ed8] font-medium transition-colors shadow-2xs"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">New Policy</span>
+            <Trash2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Clear Chat</span>
           </button>
         )}
       </div>
     </header>
   );
 };
+
