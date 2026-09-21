@@ -151,7 +151,7 @@ Explain what was searched and note that external search is disabled by policy.
 3. EXACT GROUNDING & CITATIONS: When the information IS present in the documentation:
 - Set isGrounded to true.
 - Cite the exact document ID, document title, section heading, and provide the exact quote text from the document.
-- Provide a clear, professional, well-formatted Markdown answer synthesizing the exact internal policy or spec.
+- Provide a clear, professional, conversational, and well-formatted Markdown answer synthesizing the exact internal policy or spec. DO NOT just output a table of contents or raw dumps of headings. Read the document, find the actual relevant rules, and summarize them naturally.
 4. NO SPECULATION: Never guess, extrapolate, or assume policies not written in the documents.`;
 
     const userPrompt = `INTERNAL COMPANY KNOWLEDGE BASE:
@@ -163,58 +163,78 @@ USER QUESTION:
 Please answer the user's question strictly according to the internal documents provided above.
 Return a structured JSON response matching the required schema.`;
 
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: userPrompt,
-      config: {
-        systemInstruction: systemInstruction,
-        temperature: 0.0, // Zero temperature for maximum deterministic factual grounding
-        topP: 0.1,
-        responseMimeType: 'application/json',
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            isGrounded: {
-              type: Type.BOOLEAN,
-              description: 'True if the answer is explicitly found in the provided company documents; false if the question cannot be answered from the docs.'
-            },
-            answer: {
-              type: Type.STRING,
-              description: 'The grounded answer based ONLY on the documents. If not in the documents, state that you cannot answer because the information is not in the internal documentation.'
-            },
-            confidence: {
-              type: Type.NUMBER,
-              description: 'A score from 0.0 to 1.0 indicating factual grounding certainty in the provided text.'
-            },
-            citations: {
-              type: Type.ARRAY,
-              description: 'Array of exact citations from the documents used to formulate the answer.',
-              items: {
-                type: Type.OBJECT,
-                properties: {
-                  documentId: { type: Type.STRING },
-                  documentTitle: { type: Type.STRING },
-                  sectionHeading: { type: Type.STRING },
-                  exactQuote: { type: Type.STRING },
-                  relevanceScore: { type: Type.NUMBER }
+    const modelsToTry = ['gemini-3.6-flash', 'gemini-2.5-flash', 'gemini-1.5-pro'];
+    let response;
+    let lastError;
+
+    for (const modelName of modelsToTry) {
+      try {
+        response = await ai.models.generateContent({
+          model: modelName,
+          contents: userPrompt,
+          config: {
+            systemInstruction: systemInstruction,
+            temperature: 0.0, // Zero temperature for maximum deterministic factual grounding
+            topP: 0.1,
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                isGrounded: {
+                  type: Type.BOOLEAN,
+                  description: 'True if the answer is explicitly found in the provided company documents; false if the question cannot be answered from the docs.'
                 },
-                required: ['documentId', 'documentTitle', 'exactQuote']
-              }
-            },
-            searchedDocs: {
-              type: Type.ARRAY,
-              description: 'List of document titles analyzed during retrieval.',
-              items: { type: Type.STRING }
-            },
-            gapAnalysis: {
-              type: Type.STRING,
-              description: 'Brief explanation of what documentation is missing if isGrounded is false.'
+                answer: {
+                  type: Type.STRING,
+                  description: 'The grounded answer based ONLY on the documents. If not in the documents, state that you cannot answer because the information is not in the internal documentation.'
+                },
+                confidence: {
+                  type: Type.NUMBER,
+                  description: 'A score from 0.0 to 1.0 indicating factual grounding certainty in the provided text.'
+                },
+                citations: {
+                  type: Type.ARRAY,
+                  description: 'Array of exact citations from the documents used to formulate the answer.',
+                  items: {
+                    type: Type.OBJECT,
+                    properties: {
+                      documentId: { type: Type.STRING },
+                      documentTitle: { type: Type.STRING },
+                      sectionHeading: { type: Type.STRING },
+                      exactQuote: { type: Type.STRING },
+                      relevanceScore: { type: Type.NUMBER }
+                    },
+                    required: ['documentId', 'documentTitle', 'exactQuote']
+                  }
+                },
+                searchedDocs: {
+                  type: Type.ARRAY,
+                  description: 'List of document titles analyzed during retrieval.',
+                  items: { type: Type.STRING }
+                },
+                gapAnalysis: {
+                  type: Type.STRING,
+                  description: 'Brief explanation of what documentation is missing if isGrounded is false.'
+                }
+              },
+              required: ['isGrounded', 'answer', 'confidence', 'citations', 'searchedDocs']
             }
-          },
-          required: ['isGrounded', 'answer', 'confidence', 'citations', 'searchedDocs']
-        }
+          }
+        });
+        
+        // If we get here, the call succeeded, break out of the loop
+        console.log(`Successfully generated content using model: ${modelName}`);
+        break;
+      } catch (err: any) {
+        console.warn(`Model ${modelName} failed:`, err?.message);
+        lastError = err;
+        // Continue to the next model in the fallback array
       }
-    });
+    }
+
+    if (!response) {
+      throw lastError || new Error('All model fallback attempts failed');
+    }
 
     const responseText = response.text;
     if (!responseText) {

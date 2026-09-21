@@ -1115,6 +1115,345 @@ Divine Oghenetega UKEGHE
 
 **Local Organization Secretary**
 Taiye Peace ABIODUN`
+  },
+  {
+    id: 'DOC-JCIN-002',
+    title: 'JCI Etiquette and Protocol Guide',
+    category: 'Protocol',
+    lastUpdated: '2026-09-20',
+    version: '1.0',
+    author: 'JCI',
+    summary: 'Guide covering dress code, pin placement, protocol precedence, salutations, written communications, and etiquette.',
+    tags: ['etiquette', 'protocol', 'dress code', 'pins'],
+    isDefault: true,
+    content: `# JCI Etiquette and Protocol Guide
+
+## Introduction
+Once you have been elected or appointed as a JCI Officer, you are a JCI Officer everywhere you go in the JCI world during your term of office. Even in your home country or home chapter, you are a JCI Officer first, representing the organization, and then a member of your home National or Local Organization.
+
+## The JCI Dress Code
+A frequently asked question by JCI officers and members alike is: What is the appropriate dress for any given situation? This is a delicate question as dress can vary greatly by country. When traveling, please check with the National President or your assigned country host for clarification.
+
+### Business Formal (business suit)
+- Asia: western-style dark suits; women: conservative dresses and suits in muted colors
+- Europe: men should avoid wearing white socks with dress shoes; long sleeved dress shirts, which should extend about ½ inch below the sleeve of the jacket are appropriate
+- Women: in general, very high heels or boots are inappropriate; jewelry and accessories should be high quality and tasteful (e.g. no costume jewelry); makeup should be applied conservatively
+
+### Business Casual
+- Africa: conservative; more formal in English-speaking countries and less formal in French-speaking countries
+- Americas: khakis or dress pants; sweater, polo, sport coat; women: skirt, capris or casual dress
+- Asia: suit but no tie
+- Europe: jeans, dress shirt, sport coat
+
+### Casual
+- General: jeans, shorts, JCI polo, JCI t-shirt or other causal shirt
+- Asia: suit without a tie or jacket
+
+### Cocktail and semi-formal
+- Men: dark suit
+- Women: knee length dress
+- President chain is appropriate
+
+### Formal
+- Men - tuxedo
+- Women - traditional dress or floor length dress
+- President chain is appropriate
+
+## JCI Pins
+Because of all the different events JCI Officers and members participate in, a common question asked is what pins to wear and when?
+- First, your nametag is always worn on your right shoulder near the lapel. When greeting someone with a handshake, you extend your right hand. When you do, your nametag, if on the right side of your body, extends as well making it easier for the person you are meeting to see. In general, nametags should not be worn during formal events.
+- The JCI member pin can be worn in all settings. It is to be worn on the left shoulder/lapel area. A gold pin indicates members who hold an officer position at the national or international level. A silver pin indicates general members and local officers.
+- The officer pin is reserved for formal events and is to be worn on the right shoulder near the lapel.
+- If you have a foundation pin, this is also reserved for formal events. It can be worn on the right shoulder near the lapel next to your officer pin, or in the center of the chest underneath a man's bow tie.
+- Wear your senate pin on the right shoulder near the lapel only when at a JCI Senate function in your home country.
+
+## Protocol Precedence Rules
+Precedence refers to priority in importance, order or rank. In JCI, precedence is particularly important in ceremonial situations.
+
+### Table Seating
+In JCI, if there is a main table at an event, the chairperson of the event sits in the middle of the table. The most important guest sits to the chairperson’s right, the second on the chairperson’s left, and then continue alternating between right and left according to descending rank.
+
+### Flag Display
+- The host-country national flag and the JCI flag should not be displayed next to each other.
+- The national flag is always on the right of the entrance or stage and the JCI flag is on the left.
+- If displaying more than one national flag, the host-country flag must be larger or the same size as the guest flag(s).
+
+## Salutations and Speaking Order
+- In regards to opening speeches, the first person to address the audience shall go through the official greetings, and the remaining speakers can skip them by greeting the audience generally and saying "All protocols observed".
+- All past JCI Presidents and National Presidents shall be addressed as "President" and not "Past President" out of respect.
+- When greeting the audience, the order shall be: highest governmental official from the host country or city, JCI President, other governmental officials, Event Chairperson, JCI Board of Directors, JCI Presidents who served the organization throughout the years, host National or Local President, Senators and members, ladies and gentlemen.
+- The order of speeches shall be the opposite of the above-mentioned list.
+
+## Written Communication
+- The only individual authorized to write on behalf of the organization is the President.
+- Administrative communication shall be done by the Secretary General.
+- All other official communication (condolences, congratulations, etc) shall be done by the President.
+- Official invitations shall be signed by the President and Event Chairperson and sent out by the SG.`
+  },
+  {
+    id: 'DOC-JCIN-003',
+    title: 'JCI Nigeria Collegiate Code of Conduct',
+    category: 'Code of Conduct',
+    lastUpdated: '2017-10-19',
+    version: '2017',
+    author: 'JCI Nigeria',
+    summary: 'The code of conduct for JCI Nigeria Collegiate members and local organizations.',
+    tags: ['code of conduct', 'collegiate', 'rules'],
+    isDefault: true,
+    content: `# JCI Nigeria Collegiate Code of Conduct
+
+## PART I: THE INDIVIDUAL MEMBER
+
+### CHAPTER I: DECLARATION OF MISSION, PRINCIPLES AND OBJECTIVES
+ARTICLE 1-1. MISSION
+JCI’s Mission shall be “To provide development opportunities that empower young people to create positive change.”
+ARTICLE 1-2. VISION
+JCI’s Vision shall be “To be the leading global network of young active citizens.”
+ARTICLE 1-4: AIM
+The collegiate structure is aimed at extending active citizenship services to higher institutions of learning in Nigeria and building young members transient into JCI affiliated Local Organizations upon graduation. Specific focus shall include but not limited to building:
+a) Entrepreneurship skills
+b) Public Speaking skills
+c) Leadership skills
+d) Community Development awareness on campuses
+
+### CHAPTER II: INDIVIDUAL MEMBER
+ARTICLE 2-1: MEMBERSHIP AND AFFILIATION
+Individual membership of the Local Organization shall be restricted to only duly enrolled students in tertiary institutions.
+
+## PART II: THE COLLEGIATE LOCAL ORGANIZATION
+
+### CHAPTER I: NAME AND AFFILIATION
+ARTICLE 1-1: NAME
+The members of Junior Chamber International Nigeria in tertiary Institution shall be known as “COLLEGIATE MEMBERS” and hereafter in this code of conduct shall belong to “COLLEGIATE LOCAL ORGANIZATIONS”.
+
+### CHAPTER II: MEMBERSHIP
+ARTICLE 2-1: QUALIFICATION
+a) Membership of Collegiate Structure shall comprise all financial Collegiate Local Organizations affiliated to Junior Chamber International Nigeria.
+b) Financial status shall refer to all payment of JCIN dues, and JCI dues where granted direct affiliation.
+
+### CHAPTER III: OFFICERS AND STAFF OF OFFICE
+ARTICLE 3-1: ELECTED OFFICERS
+The elected Officers of the Collegiate Local Organization shall be:
+a) President
+b) One (1) or Two (2) Vice-Presidents of equal ranks
+
+ARTICLE 3-5: STAFF OF OFFICE
+The Staff of office of the Collegiate President shall be the Gavel and Chain of Office, chain of office shall be used in line with JCI Policy – Local Organization to use SILVER Colour Chain and National Organization to use GOLD Colour Chain.
+
+### CHAPTER IV: DOMICILIATION OF ACTIVITIES
+ARTICLE 4-1: MEETINGS
+All meetings of the Collegiate Local Organization shall be restricted to the campuses and school premises.
+
+ARTICLE 4-2: EVENTS AND CONVENTIONS
+Collegiate Local Organizations shall hold its projects and programmes within and or outside the school campus upon written approval from the Registrar or Dean, Students’ Affairs of the Institution. Same shall apply to Collegiate Local Organisation conventions.
+
+## PART III: THE COLLEGIATE COUNCIL
+
+### CHAPTER I: GENERAL ASSEMBLY
+ARTICLE 1-5: QUORUM
+A quorum for the General Assembly shall comprise Collegiate Local Organizations having thirty (30) percent of the total possible votes.
+
+## PART IV: THE SANCTION GRID
+Offences and Sanctions at Individual Member, Local Organization and Collegiate Council Levels.
+Insubordination:
+- 1st: ES advices the LO to caution the individual
+- 2nd: Suspension
+- 3rd: Dismissal`
+  },
+  {
+    id: 'DOC-JCIN-004',
+    title: 'Robert’s Rules of Order – the Basics',
+    category: 'Rules',
+    lastUpdated: '2013-04',
+    version: '1.0',
+    author: 'PTA',
+    summary: 'Basic principles and definitions of Robert’s Rules of Order for parliamentary procedure.',
+    tags: ['roberts rules', 'parliamentary', 'procedure', 'meetings'],
+    isDefault: true,
+    content: `# Robert’s Rules of Order – the Basics
+
+Parliamentary procedure is a set of rules for conducting orderly meetings that accomplish goals fairly. Most PTAs use Roberts Rules of Order. Benefits of parliamentary procedure include the following:
+- Justice and courtesy for all
+- Maintenance of order
+- Consideration of one item at a time
+- All sides get heard
+- Ability for each member to provide input
+- Majority rule
+- Protection of the rights of all members including the minority
+
+## Basic Principles
+- All members have equal rights, privileges and obligations
+- No person can speak until recognized by the chair
+- Personal remarks during debate are out of order
+- Only one question at a time may be considered, and only one person may have the floor at any one time
+- Members have a right to know what the immediately pending question is and to have it restated before a vote is taken
+- Full and free discussion of every main motion is a basic right
+- A quorum must be present for business to be conducted
+- A majority decides a question except when basic rights of members are involved or a rule provides otherwise.
+- A 2/3 vote is required for any motion that deprives a member of right in any way (e.g., cutting off debate)
+- Silence gives consent. Those who do not vote allow the decision to be made by those who do vote.
+- The Chair should always remain impartial
+
+## Basic Definitions
+- Motion – A formal proposal made to bring a subject before an assembly for its consideration and action. Begins with “I move that...”
+- Second – A statement by a member who agrees that the motion made by another member be considered. Stated as “Second,” or “I second the motion.”
+- Amendment – Before the vote is taken on a motion, it may be amended by striking out words, inserting or adding words, striking out words and inserting others in their place, or substituting one (1) paragraph or resolution for another.
+- Quorum - the minimum number of members who must be present in order for a PTA to conduct business. The quorum can be found in the local unit’s bylaws.
+- Presiding officer/Chair – The individual who facilitates the meeting, usually the President.
+
+## Role of the Presiding officer
+- To remain impartial during debate – the presiding officer must relinquish the chair in order to debate the merits of a motion and may not chair the meeting again until after a vote has been taken on the motion has been disposed of
+- To vote only to create or break a tie (or 2/3 for matters requiring a 2/3 vote) – exception: the presiding officer may vote on any vote by ballot
+- To introduce business in proper order per the agenda
+- To recognize speakers
+- To determine if a motion is in order
+- To keep discussion germane to the pending motion
+- To maintain order
+- To put motions to a vote and announce results
+
+## General rules of Debate
+- No member may speak until recognized by the chair
+- All discussion must be relevant to the immediately pending question
+- No member can speak more than twice to each debatable motion. The second time takes place after everyone wishing to debate the motion has had an opportunity to speak once
+- No member can speak more than ten minutes or as decided by members.
+- All remarks must be addressed to the chair – no cross debate is permitted
+- It is not permissible to speak against one’s own motion (but one can vote against one’s own motion)
+- Debate must address issues not personalities – no one is permitted to make personal attacks or question the motives of other speakers
+- The presiding officer must relinquish the chair in order to participate in debate and cannot reassume the chair until the pending main question is disposed of
+- When possible, the chair should let the floor alternate between those speaking in support and those speaking in opposition to the motion
+- Members may not disrupt the assembly
+- Rules of debate can be changed by a 2/3 vote or general consent without objection
+
+## Common methods of taking a vote:
+- General consent: "If there is no objection, we will…” (Pause) “Since there is no objection, we will…”
+- Voice vote: “As many as are in favor, say “aye.” As many opposed, say “no.” The “ayes/noes” have it and the motion is adopted/lost.”
+- Rising vote (not counted): “Those in favor will rise. Thank you, be seated. Those opposed will rise. Thank you, be seated. There is a majority (or 2/3) in the affirmative and the motion is adopted.”
+
+## Helpful terminology
+- Recommendations, bylaws, rules, resolutions, budgets, and audits are adopted.
+- Reports are filed.
+- Resignations are accepted.
+- Bills and minutes are approved.
+- If corrections were made to the minutes, the minutes are then approved as corrected.
+- Treasurer’s statement is neither approved nor adopted; but after questions are answered regarding any item as reported, it is placed on file for audit as stipulated in the bylaws.
+- Motions are recorded as “adopted” or “lost.”`
+  },
+  {
+    id: 'DOC-JCIN-005',
+    title: '19 Most Used Motions Simplified',
+    category: 'Rules',
+    lastUpdated: '2022',
+    version: '1.0',
+    author: 'Ibi Sofekun',
+    summary: 'A simplified guide to the 19 most used parliamentary motions, their language, intent, and context.',
+    tags: ['motions', 'parliamentary', 'procedure', 'rules'],
+    isDefault: true,
+    content: `# 19 Most Used Motions Simplified
+
+## Classes of Motion
+1. MAIN MOTIONS
+2. PRIVILEGED MOTIONS
+3. INCIDENTAL MOTIONS
+4. UNCLASSIFIED MOTIONS
+
+*Important to note: There is nothing called a COUNTER MOTION; all you may have is an argument counter to the motion on the floor.*
+
+## Main Motions
+Introduces matter to the floor. There can only be One MAIN MOTION on the floor at any point in time and that motion can only be vacated by a VOTE which determines passage or failure.
+Note that a VOTE on the amendments to the MAIN MOTION still requires a final vote on the MAIN MOTION itself.
+
+**1. Main Motion**
+"I move to/that..."
+Introduces Business (or states a proposal) for Debate and Action. Has Floor when No Motion is pending. It must have “Second” or is lost.
+- Can interrupt debate: No
+- Needs a second: Yes
+- Is it debatable: Yes
+- Is it amendable: Yes
+- Vote to pass: Majority
+
+## Privileged Motions
+Are of such importance or urgency they outrank all others.
+
+**2. Motion to Adjourn**
+"I move we ADJOURN until (time & place)."
+Terminates Meeting. May additionally state Time And Place of next meeting if not already provided. In emergencies, Chair may declare the ADJOURNMENT.
+- Needs a second: Yes
+- Is it debatable: No
+- Vote to pass: Majority
+
+**3. Motion to Recess**
+"I move we RECESS for (time) to (purpose)."
+Intermission as for meals, cooling tempers etc.
+- Needs a second: Yes
+- Vote to pass: Majority
+
+**4. Question of Privilege**
+"I rise to a QUESTION OF PRIVILEGE."
+Relates either to rights of one Member, or to Assembly's comfort, disturbance, conduct, etc. Must be urgent to interrupt Business.
+
+**5. Orders of the Day**
+"I call for the ORDERS OF THE DAY."
+Demands conforming to the Adopted Agenda.
+
+## Subsidiary Motions
+In some way change or affect the disposition of the main motion.
+
+**6. Motion to Lay on the Table**
+"I move the Question be LAID ON THE TABLE."
+If carried, the Main Motion and those pending to it are LAID ASIDE for more pressing business.
+
+**7. Previous Question / Limit Debate / Debate**
+"I call for the PREVIOUS QUESTION." (Stops Debate)
+Applies only to immediate Motion unless specified. If PREVIOUS QUESTION carries, Debate stops at once for Voting.
+- Vote to pass: 2/3
+
+**8. Motion to Postpone**
+"I move the Question POSTPONED until-?."
+Delay action until next meeting or a specific time.
+
+**9. Motion to Refer to a Committee**
+"I move the matter be REFERRED TO A COMMITTEE."
+
+**10. Motion to Amend**
+"I move to AMEND THE MOTION by-."
+Ways to amend: Insert or add at end; Strike Out; Strike out AND Insert; Substitute.
+
+**11. Motion to Postpone Indefinitely**
+"I move that this motion be POSTPONED INDEFINITELY."
+Used to reject Main Motion.
+
+## Incidental Motions
+Concern matters of procedure arising out of business and must be settled at once.
+
+**12. Motion to Rise to a Point of Order**
+"I rise to a POINT OF ORDER."
+Used to correct a breach of Rules or Decorum.
+
+**13. Motion Appeal From The Decision of the Chair**
+"I APPEAL FROM THE DECISION OF THE CHAIR."
+Used when it is thought that the Chair made a Wrong decision.
+
+**14. Motion to Suspend Rules**
+"I move to SUSPEND THE RULES in order to/that--."
+
+**15. Motion Object to the Consideration of a Matter**
+"I OBJECT to the CONSIDERATION of this motion."
+
+**16. Motion Divide the House**
+"I call for a DIVISION OF THE ASSEMBLY."
+Verifies by a Rising Vote one just taken by Voice or Hand.
+
+**17. Parliamentary Inquiry / Information / Withdraw**
+"I rise to a PARLIAMENTARY INQUIRY."
+
+## Unclassified Motions
+Are such that they bring back to the floor a past motion.
+
+**18. Motion to Take from the Table**
+"I move to TAKE FROM THE TABLE the motion that-."
+
+**19. Motion to Reconsider**
+"I move to RECONSIDER THE VOTE."`
   }
 ];
 

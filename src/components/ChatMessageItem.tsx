@@ -85,20 +85,9 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
             <Markdown>{message.content}</Markdown>
           </div>
 
-          {/* Clean Attribution Line */}
-          {isGrounded && message.citations && message.citations.length > 0 && (
-            <div className="mt-3.5 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
-              <div className="text-[12px] text-slate-500 italic flex items-center gap-1.5">
-                <span className="w-2.5 h-2.5 rounded-xs bg-slate-300 inline-block shrink-0"></span>
-                <span>
-                  Source:{' '}
-                  <strong className="font-semibold text-slate-700 not-italic">
-                    {message.citations[0].documentTitle}
-                  </strong>{' '}
-                  {message.citations[0].sectionHeading && `• ${message.citations[0].sectionHeading}`}
-                </span>
-              </div>
-
+          {/* Copy Button Row (Citations and Sources removed per request) */}
+          {isGrounded && (
+            <div className="mt-3.5 pt-2.5 border-t border-slate-100 flex flex-wrap items-center justify-end gap-2">
               <div className="flex items-center gap-2">
                 <button
                   id={`copy-btn-${message.id}`}
@@ -108,75 +97,6 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
-              </div>
-            </div>
-          )}
-
-          {/* Refusal Notice Attribution */}
-          {isNotFound && (
-            <div className="mt-3 pt-2.5 border-t border-slate-100 text-[12px] text-slate-500 italic flex items-center justify-between">
-              <span>No relevant documentation found in internal Knowledge Base.</span>
-              <button
-                id={`copy-btn-${message.id}`}
-                onClick={handleCopy}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded hover:bg-slate-100 transition-colors"
-                title="Copy response"
-              >
-                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
-            </div>
-          )}
-
-          {/* Citations Inspector Drawer */}
-          {isGrounded && message.citations && message.citations.length > 0 && (
-            <div className="mt-2.5 pt-2.5 border-t border-slate-100">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[11px] font-semibold text-slate-600 uppercase tracking-wider flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  Verified Excerpts ({message.citations.length})
-                </span>
-                {message.citations.length > 1 && (
-                  <button
-                    onClick={() => setShowAllCitations(!showAllCitations)}
-                    className="text-[11px] text-[#2563eb] hover:underline font-medium flex items-center gap-0.5"
-                  >
-                    {showAllCitations ? (
-                      <>
-                        Show less <ChevronUp className="w-3 h-3" />
-                      </>
-                    ) : (
-                      <>
-                        View all <ChevronDown className="w-3 h-3" />
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-1.5">
-                {(showAllCitations ? message.citations : message.citations.slice(0, 1)).map((citation, idx) => (
-                  <div
-                    key={idx}
-                    className="group bg-slate-50 hover:bg-slate-100/90 rounded-lg p-2.5 border border-slate-200/80 transition-colors text-xs"
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-semibold text-slate-800 text-[12px] flex items-center gap-1">
-                        <FileText className="w-3 h-3 text-slate-400" />
-                        {citation.documentTitle}
-                      </span>
-                      <button
-                        onClick={() => onViewDoc(citation.documentId, citation.exactQuote)}
-                        className="text-[11px] text-[#2563eb] hover:text-[#1d4ed8] font-medium flex items-center gap-0.5 transition-colors"
-                      >
-                        <span>Inspect in Document</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </button>
-                    </div>
-                    <blockquote className="text-[11.5px] text-slate-600 italic bg-white rounded p-2 border-l-2 border-[#2563eb] pl-2 my-0.5">
-                      "{citation.exactQuote}"
-                    </blockquote>
-                  </div>
-                ))}
               </div>
             </div>
           )}

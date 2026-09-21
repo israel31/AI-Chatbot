@@ -40,7 +40,7 @@ import { DocumentViewerModal } from './components/DocumentViewerModal';
 import { AddDocumentModal } from './components/AddDocumentModal';
 import { DocGapModal } from './components/DocGapModal';
 
-const STORAGE_KEY_DOCS = 'company_docs_kb_v2';
+const STORAGE_KEY_DOCS = 'company_docs_kb_v4';
 const STORAGE_KEY_GAPS = 'company_docs_gaps_v1';
 
 export default function App() {
@@ -278,10 +278,13 @@ export default function App() {
       ? 'All Knowledge Bases'
       : `${selectedDocIds.length} Selected Policies`;
 
+  // Determine if admin view is active
+  const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
+
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#f8fafc] text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
       {/* Mobile Sidebar Overlay */}
-      {isMobileSidebarOpen && (
+      {isMobileSidebarOpen && isAdmin && (
         <div
           onClick={() => setIsMobileSidebarOpen(false)}
           className="fixed inset-0 z-40 bg-slate-900/40 backdrop-blur-xs md:hidden"
@@ -289,11 +292,12 @@ export default function App() {
       )}
 
       {/* Clean Minimalism Sidebar (Desktop fixed 280px / Mobile drawer) */}
-      <aside
-        className={`fixed md:static inset-y-0 left-0 z-50 w-[280px] h-full bg-white border-r border-slate-200 flex flex-col transition-transform duration-200 ease-in-out shrink-0 ${
-          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-        }`}
-      >
+      {isAdmin && (
+        <aside
+          className={`fixed md:static inset-y-0 left-0 z-50 w-[280px] h-full bg-white border-r border-slate-200 flex flex-col transition-transform duration-200 ease-in-out shrink-0 ${
+            isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+          }`}
+        >
         {/* Brand / Logo Header */}
         <div className="h-16 border-b border-slate-100 flex items-center justify-between px-6 shrink-0">
           <div className="flex items-center gap-2">
@@ -406,7 +410,8 @@ export default function App() {
             </div>
           </div>
         </div>
-      </aside>
+        </aside>
+      )}
 
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col h-full min-w-0 relative bg-[#f8fafc] overflow-hidden">
@@ -427,6 +432,7 @@ export default function App() {
           hasMessages={messages.length > 0}
           onToggleMobileSidebar={() => setIsMobileSidebarOpen(true)}
           activeContextName={activeContextName}
+          isAdmin={isAdmin}
         />
 
         {/* Chat Viewport */}

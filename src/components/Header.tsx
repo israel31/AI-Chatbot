@@ -14,6 +14,7 @@ interface HeaderProps {
   hasMessages: boolean;
   onToggleMobileSidebar?: () => void;
   activeContextName?: string;
+  isAdmin: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -29,12 +30,13 @@ export const Header: React.FC<HeaderProps> = ({
   hasMessages,
   onToggleMobileSidebar,
   activeContextName,
+  isAdmin,
 }) => {
   return (
     <header className="h-16 border-b border-slate-200 bg-white flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 shrink-0">
       {/* Left: Secure Mode Badge & Context */}
       <div className="flex items-center gap-3">
-        {onToggleMobileSidebar && (
+        {onToggleMobileSidebar && isAdmin && (
           <button
             onClick={onToggleMobileSidebar}
             className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors"
@@ -58,20 +60,22 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Right: Clean Action Controls */}
       <div className="flex items-center gap-3 sm:gap-4">
         {/* Strict Grounding Toggle */}
-        <button
-          id="toggle-strictness-mode"
-          onClick={onToggleStrictMode}
-          className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md font-medium transition-colors border ${
-            strictMode
-              ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
-              : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
-          }`}
-          title="Toggle strict air-gapped grounding refusal"
-        >
-          <CheckCircle2 className={`w-3.5 h-3.5 ${strictMode ? 'text-emerald-400' : 'text-slate-400'}`} />
-          <span className="hidden sm:inline">Strict Grounding:</span>
-          <span>{strictMode ? 'Enforced' : 'Standard'}</span>
-        </button>
+        {isAdmin && (
+          <button
+            id="toggle-strictness-mode"
+            onClick={onToggleStrictMode}
+            className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md font-medium transition-colors border ${
+              strictMode
+                ? 'bg-slate-900 text-white border-slate-900 shadow-2xs'
+                : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
+            }`}
+            title="Toggle strict air-gapped grounding refusal"
+          >
+            <CheckCircle2 className={`w-3.5 h-3.5 ${strictMode ? 'text-emerald-400' : 'text-slate-400'}`} />
+            <span className="hidden sm:inline">Strict Grounding:</span>
+            <span>{strictMode ? 'Enforced' : 'Standard'}</span>
+          </button>
+        )}
 
         {/* Clear Session */}
         {hasMessages && (
@@ -85,7 +89,7 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         {/* Gaps Link */}
-        {gapCount > 0 && (
+        {isAdmin && gapCount > 0 && (
           <button
             id="header-gaps-btn"
             onClick={onOpenGapLog}
@@ -97,14 +101,16 @@ export const Header: React.FC<HeaderProps> = ({
         )}
 
         {/* Add Policy / Quick Button for small screens */}
-        <button
-          id="add-doc-quick-btn"
-          onClick={onOpenAddDoc}
-          className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-[#2563eb] text-white hover:bg-[#1d4ed8] font-medium transition-colors shadow-2xs"
-        >
-          <PlusCircle className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">New Policy</span>
-        </button>
+        {isAdmin && (
+          <button
+            id="add-doc-quick-btn"
+            onClick={onOpenAddDoc}
+            className="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-md bg-[#2563eb] text-white hover:bg-[#1d4ed8] font-medium transition-colors shadow-2xs"
+          >
+            <PlusCircle className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">New Policy</span>
+          </button>
+        )}
       </div>
     </header>
   );
