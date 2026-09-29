@@ -1,19 +1,20 @@
 import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import serverless from 'serverless-http';
 import dotenv from 'dotenv';
 import { GoogleGenAI, Type } from '@google/genai';
-import { createServer as createViteServer } from 'vite';
 
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
-
 app.use(express.json({ limit: '10mb' }));
+
+// Strip Netlify internal function path prefix if present
+app.use((req, res, next) => {
+  if (req.url.startsWith('/.netlify/functions/api')) {
+    req.url = req.url.replace('/.netlify/functions/api', '/api');
+  }
+  next();
+});
 
 // Lazy initialize Gemini client
 function getGeminiClient(): GoogleGenAI | null {
@@ -30,15 +31,6 @@ function getGeminiClient(): GoogleGenAI | null {
     },
   });
 }
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    hasGeminiKey: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY'),
-    timestamp: new Date().toISOString(),
-  });
-});
 
 // Fallback search algorithm for internal docs when AI key is pending/simulated
 function localDocSearch(query: string, documents: any[]) {
@@ -112,6 +104,15 @@ function localDocSearch(query: string, documents: any[]) {
   };
 }
 
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    hasGeminiKey: Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'MY_GEMINI_API_KEY'),
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Main internal query API
 app.post('/api/query', async (req, res) => {
   try {
@@ -174,7 +175,7 @@ Return a structured JSON response matching the required schema.`;
           contents: userPrompt,
           config: {
             systemInstruction: systemInstruction,
-            temperature: 0.0, // Zero temperature for maximum deterministic factual grounding
+            temperature: 0.0,
             topP: 0.1,
             responseMimeType: 'application/json',
             responseSchema: {
@@ -222,13 +223,11 @@ Return a structured JSON response matching the required schema.`;
           }
         });
         
-        // If we get here, the call succeeded, break out of the loop
         console.log(`Successfully generated content using model: ${modelName}`);
         break;
       } catch (err: any) {
         console.warn(`Model ${modelName} failed:`, err?.message);
         lastError = err;
-        // Continue to the next model in the fallback array
       }
     }
 
@@ -243,7 +242,6 @@ Return a structured JSON response matching the required schema.`;
 
     const parsedData = JSON.parse(responseText);
 
-    // Sanitize response to ensure compact payload size for automated benchmarks and test runners
     if (parsedData.citations && Array.isArray(parsedData.citations)) {
       parsedData.citations = parsedData.citations.slice(0, 3).map((c: any) => ({
         ...c,
@@ -260,8 +258,6 @@ Return a structured JSON response matching the required schema.`;
     res.json(parsedData);
   } catch (error: any) {
     console.error('Error handling /api/query:', error);
-    
-    // Fallback to local deterministic search if API call fails
     try {
       const fallbackResult = localDocSearch(req.body.query, req.body.documents || []);
       res.json(fallbackResult);
@@ -274,25 +270,4 @@ Return a structured JSON response matching the required schema.`;
   }
 });
 
-// Vite / static server configuration
-async function startServer() {
-  if (process.env.NODE_ENV !== 'production') {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: 'spa',
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
-  }
-
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Internal Documentation AI Server running on http://0.0.0.0:${PORT}`);
-  });
-}
-
-startServer();
+export const handler = serverless(app);
