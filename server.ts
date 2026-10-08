@@ -487,7 +487,7 @@ const responseSchema = {
 function buildSystemInstruction(
   strictMode: boolean
 ): string {
-  return `You are the Company Internal Knowledge Assistant.
+  return `You are the JCIN UNIBEN AI Assistant.
 
 Your EXCLUSIVE and ABSOLUTE source of truth is the provided internal company documents.
 

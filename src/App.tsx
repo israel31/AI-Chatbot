@@ -442,13 +442,13 @@ export default function App() {
               <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-900 mb-5 flex items-center justify-center transition-transform hover:scale-105">
                 <img
                   src="/chimobi_logo.jpg"
-                  alt="Chimobi Logo"
+                  alt="JCIN UNIBEN Logo"
                   className="w-full h-full object-cover"
                 />
               </div>
 
               <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-                Chimobi
+                JCIN UNIBEN
               </h2>
               <p className="text-[15px] text-slate-500 max-w-sm mt-2 leading-relaxed font-medium">
                 How can I help you today?
@@ -471,13 +471,13 @@ export default function App() {
                   <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs border border-slate-200/80 bg-slate-900 flex items-center justify-center shrink-0">
                     <img
                       src="/chimobi_logo.jpg"
-                      alt="Chimobi Logo"
+                      alt="JCIN UNIBEN Logo"
                       className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-3 text-xs text-slate-600">
                     <Loader2 className="w-4 h-4 text-[#2563eb] animate-spin shrink-0" />
-                    <span>Chimobi is thinking...</span>
+                    <span>JCIN UNIBEN is thinking...</span>
                   </div>
                 </div>
               )}
@@ -507,7 +507,7 @@ export default function App() {
                 value={inputQuery}
                 onChange={e => setInputQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask Chimobi..."
+                placeholder="Ask JCIN UNIBEN..."
                 rows={1}
                 disabled={isLoading}
                 className="flex-1 bg-transparent border-none outline-none text-[15px] text-slate-800 placeholder-slate-400 resize-none px-3 py-1.5 leading-relaxed custom-scrollbar"

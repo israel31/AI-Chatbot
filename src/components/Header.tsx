@@ -34,7 +34,7 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   return (
     <header className="h-16 border-b border-slate-200/80 bg-white/90 backdrop-blur-md flex items-center justify-between px-4 sm:px-8 sticky top-0 z-30 shrink-0 shadow-2xs">
-      {/* Left: Logo & Name "Chimobi" */}
+      {/* Left: Logo & Name "JCIN UNIBEN" */}
       <div className="flex items-center gap-3">
         {onToggleMobileSidebar && isAdmin && (
           <button
@@ -50,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs border border-slate-200/80 bg-slate-900 flex items-center justify-center shrink-0">
             <img
               src="/chimobi_logo.jpg"
-              alt="Chimobi Logo"
+              alt="JCIN UNIBEN Logo"
               className="w-full h-full object-cover"
               onError={(e) => {
                 // Fallback to stylized SVG icon if image is loading
@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({
             />
           </div>
           <span className="font-extrabold text-xl tracking-tight text-slate-900">
-            Chimobi
+            JCIN UNIBEN
           </span>
         </div>
       </div>

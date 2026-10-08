@@ -68,7 +68,7 @@ export const ChatMessageItem: React.FC<ChatMessageItemProps> = ({
       <div className="w-8 h-8 rounded-xl overflow-hidden shadow-2xs border border-slate-200/80 bg-slate-900 flex items-center justify-center shrink-0">
         <img
           src="/chimobi_logo.jpg"
-          alt="Chimobi Logo"
+          alt="JCIN UNIBEN Logo"
           className="w-full h-full object-cover"
         />
       </div>
