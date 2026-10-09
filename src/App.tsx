@@ -1,3 +1,4 @@
+
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -30,7 +31,12 @@ import {
   Eye,
   Plus
 } from 'lucide-react';
-import { DocumentItem, ChatMessage, DocGapReport, QueryResponsePayload } from './types';
+import {
+  DocumentItem,
+  ChatMessage,
+  DocGapReport,
+  QueryResponsePayload
+} from './types';
 import { DEFAULT_COMPANY_DOCUMENTS } from './data/defaultDocs';
 import { Header } from './components/Header';
 import { ChatMessageItem } from './components/ChatMessageItem';
@@ -74,7 +80,7 @@ export default function App() {
   const [highlightQuote, setHighlightQuote] = useState<string | undefined>(undefined);
   const [initialDraftQuery, setInitialDraftQuery] = useState<string | undefined>(undefined);
 
-  // Gaps state
+  // Documentation gaps state
   const [gaps, setGaps] = useState<DocGapReport[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_GAPS);
@@ -88,7 +94,7 @@ export default function App() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Persist docs
+  // Persist documents
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_DOCS, JSON.stringify(documents));
@@ -106,7 +112,7 @@ export default function App() {
     }
   }, [gaps]);
 
-  // Scroll to bottom when messages update
+  // Scroll to the latest message when the conversation changes
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
@@ -118,13 +124,17 @@ export default function App() {
 
     // Filter documents by selected IDs
     const activeDocs = documents.filter(d => selectedDocIds.includes(d.id));
+
     if (activeDocs.length === 0) {
-      alert('Please select at least one company document in the Knowledge Base scope to query.');
+      alert(
+        'Please select at least one company document in the Knowledge Base scope to query.'
+      );
       setIsKbModalOpen(true);
       return;
     }
 
     const userMessageId = `msg-user-${Date.now()}`;
+
     const userMsg: ChatMessage = {
       id: userMessageId,
       role: 'user',
@@ -169,27 +179,33 @@ export default function App() {
 
       setMessages(prev => [...prev, assistantMsg]);
 
-      // If not grounded, auto-log to gaps if not already present
+      // Log unanswered questions as documentation gaps
       if (!data.isGrounded) {
         const newGap: DocGapReport = {
           id: `gap-${Date.now()}`,
           query: trimmed,
           timestamp: new Date().toISOString(),
           searchedDocCount: activeDocs.length,
-          notes: data.gapAnalysis || 'Information missing in verified company documents',
+          notes:
+            data.gapAnalysis ||
+            'Information missing in verified company documents',
           status: 'pending',
         };
+
         setGaps(prev => [newGap, ...prev.slice(0, 49)]);
       }
     } catch (err: any) {
       console.error('Error during query:', err);
+
       const errorMsg: ChatMessage = {
         id: `msg-err-${Date.now()}`,
         role: 'assistant',
-        content: `**Error retrieving information:** ${err.message || 'Unable to connect to internal document search service'}.\n\nPlease ensure your query is formulated clearly and retry.`,
+        content: `**Error retrieving information:** ${err.message || 'Unable to connect to internal document search service'
+          }.\n\nPlease ensure your query is formulated clearly and retry.`,
         timestamp: new Date().toISOString(),
         status: 'error',
       };
+
       setMessages(prev => [...prev, errorMsg]);
     } finally {
       setIsLoading(false);
@@ -206,6 +222,7 @@ export default function App() {
 
   const handleViewDoc = (docId: string, quote?: string) => {
     const doc = documents.find(d => d.id === docId);
+
     if (doc) {
       setViewingDoc(doc);
       setHighlightQuote(quote);
@@ -218,21 +235,30 @@ export default function App() {
   };
 
   const handleUpdateDocument = (updatedDoc: DocumentItem) => {
-    setDocuments(prev => prev.map(d => (d.id === updatedDoc.id ? updatedDoc : d)));
+    setDocuments(prev =>
+      prev.map(d => (d.id === updatedDoc.id ? updatedDoc : d))
+    );
+
     if (viewingDoc && viewingDoc.id === updatedDoc.id) {
       setViewingDoc(updatedDoc);
     }
   };
 
   const handleDeleteDocument = (docId: string) => {
-    if (confirm('Are you sure you want to remove this document from the knowledge base?')) {
+    if (
+      confirm(
+        'Are you sure you want to remove this document from the knowledge base?'
+      )
+    ) {
       setDocuments(prev => prev.filter(d => d.id !== docId));
       setSelectedDocIds(prev => prev.filter(id => id !== docId));
     }
   };
 
   const handleResetDefaults = () => {
-    if (confirm('Reset knowledge base to default corporate policy documents?')) {
+    if (
+      confirm('Reset knowledge base to default corporate policy documents?')
+    ) {
       setDocuments(DEFAULT_COMPANY_DOCUMENTS);
       setSelectedDocIds(DEFAULT_COMPANY_DOCUMENTS.map(d => d.id));
     }
@@ -240,7 +266,9 @@ export default function App() {
 
   const handleToggleSelectDoc = (id: string) => {
     setSelectedDocIds(prev =>
-      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+      prev.includes(id)
+        ? prev.filter(item => item !== id)
+        : [...prev, id]
     );
   };
 
@@ -266,6 +294,7 @@ export default function App() {
       notes: 'Manually flagged as missing internal documentation',
       status: 'pending',
     };
+
     setGaps(prev => [newGap, ...prev]);
     alert('Logged query into Documentation Gap Tracker!');
   };
@@ -275,15 +304,16 @@ export default function App() {
     selectedDocIds.length === 1
       ? documents.find(d => d.id === selectedDocIds[0])?.title.split(',')[0]
       : selectedDocIds.length === documents.length
-      ? 'All Knowledge Bases'
-      : `${selectedDocIds.length} Selected Policies`;
+        ? 'All Knowledge Bases'
+        : `${selectedDocIds.length} Selected Policies`;
 
   // Determine if admin view is active
-  const isAdmin = new URLSearchParams(window.location.search).get('role') === 'admin';
+  const isAdmin =
+    new URLSearchParams(window.location.search).get('role') === 'admin';
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#f8fafc] text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
-      {/* Mobile Sidebar Overlay */}
+    <div className="flex h-[100dvh] w-full overflow-hidden bg-[#f8fafc] text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
+      {/* Mobile sidebar overlay */}
       {isMobileSidebarOpen && isAdmin && (
         <div
           onClick={() => setIsMobileSidebarOpen(false)}
@@ -291,131 +321,142 @@ export default function App() {
         />
       )}
 
-      {/* Clean Minimalism Sidebar (Desktop fixed 280px / Mobile drawer) */}
+      {/* Knowledge base sidebar: desktop panel and mobile drawer */}
       {isAdmin && (
         <aside
-          className={`fixed md:static inset-y-0 left-0 z-50 w-[280px] h-full bg-white border-r border-slate-200 flex flex-col transition-transform duration-200 ease-in-out shrink-0 ${
-            isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
-          }`}
+          className={`fixed md:static inset-y-0 left-0 z-50 w-[280px] h-full bg-white border-r border-slate-200 flex flex-col transition-transform duration-200 ease-in-out shrink-0 ${isMobileSidebarOpen
+              ? 'translate-x-0'
+              : '-translate-x-full md:translate-x-0'
+            }`}
         >
-        {/* Brand / Logo Header */}
-        <div className="h-16 border-b border-slate-100 flex items-center justify-between px-6 shrink-0">
-          <div className="flex items-center gap-2">
-            <div className="font-extrabold text-[18px] tracking-tight text-slate-900">
-              DocuGuard<span className="text-[#2563eb]">.ai</span>
+          {/* Sidebar brand */}
+          <div className="h-16 border-b border-slate-100 flex items-center justify-between px-6 shrink-0">
+            <div className="flex items-center gap-2">
+              <div className="font-extrabold text-[18px] tracking-tight text-slate-900">
+                DocuGuard<span className="text-[#2563eb]">.ai</span>
+              </div>
             </div>
-          </div>
-          <button
-            onClick={() => setIsMobileSidebarOpen(false)}
-            className="md:hidden p-1 text-slate-400 hover:text-slate-600 rounded-md"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
 
-        {/* Knowledge Base Navigation Section */}
-        <div className="flex-1 overflow-y-auto py-5 custom-scrollbar">
-          <div className="px-6 mb-3 flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              Knowledge Bases
-            </span>
             <button
-              onClick={() => setIsKbModalOpen(true)}
-              className="text-[11px] text-[#2563eb] hover:underline font-medium"
+              onClick={() => setIsMobileSidebarOpen(false)}
+              className="md:hidden p-1 text-slate-400 hover:text-slate-600 rounded-md"
+              aria-label="Close knowledge base sidebar"
             >
-              Manage
+              <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="space-y-1 px-3">
-            {documents.map(doc => {
-              const isSelected = selectedDocIds.includes(doc.id);
-              return (
-                <div
-                  key={doc.id}
-                  onClick={() => handleToggleSelectDoc(doc.id)}
-                  className={`group flex items-center justify-between px-3 py-2.5 rounded-lg text-[13.5px] cursor-pointer transition-all ${
-                    isSelected
-                      ? 'bg-slate-100/90 text-slate-900 font-medium'
-                      : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-                  }`}
-                  title={`${doc.title} - Click to include/exclude from query scope`}
-                >
-                  <div className="flex items-center gap-2.5 truncate flex-1 min-w-0 pr-1">
-                    <span
-                      className={`w-2 h-2 rounded-full shrink-0 ${
-                        isSelected ? 'bg-[#2563eb]' : 'bg-slate-300'
+          {/* Knowledge base navigation */}
+          <div className="flex-1 overflow-y-auto py-5 custom-scrollbar">
+            <div className="px-6 mb-3 flex items-center justify-between">
+              <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                Knowledge Bases
+              </span>
+
+              <button
+                onClick={() => setIsKbModalOpen(true)}
+                className="text-[11px] text-[#2563eb] hover:underline font-medium"
+              >
+                Manage
+              </button>
+            </div>
+
+            <div className="space-y-1 px-3">
+              {documents.map(doc => {
+                const isSelected = selectedDocIds.includes(doc.id);
+
+                return (
+                  <div
+                    key={doc.id}
+                    onClick={() => handleToggleSelectDoc(doc.id)}
+                    className={`group flex items-center justify-between px-3 py-2.5 rounded-lg text-[13.5px] cursor-pointer transition-all ${isSelected
+                        ? 'bg-slate-100/90 text-slate-900 font-medium'
+                        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
                       }`}
-                    />
-                    <span className="truncate">{doc.title.split(',')[0]}</span>
+                    title={`${doc.title} - Click to include/exclude from query scope`}
+                  >
+                    <div className="flex items-center gap-2.5 truncate flex-1 min-w-0 pr-1">
+                      <span
+                        className={`w-2 h-2 rounded-full shrink-0 ${isSelected ? 'bg-[#2563eb]' : 'bg-slate-300'
+                          }`}
+                      />
+
+                      <span className="truncate">
+                        {doc.title.split(',')[0]}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={e => {
+                        e.stopPropagation();
+                        handleViewDoc(doc.id);
+                      }}
+                      className="p-1 text-slate-400 hover:text-[#2563eb] rounded hover:bg-white transition-colors opacity-0 group-hover:opacity-100"
+                      title="View policy"
+                      aria-label={`View ${doc.title}`}
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Sidebar quick actions */}
+            <div className="px-4 mt-6 pt-4 border-t border-slate-100 space-y-2">
+              <button
+                onClick={() => {
+                  setInitialDraftQuery(undefined);
+                  setIsAddDocModalOpen(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#2563eb] text-white text-xs font-semibold hover:bg-[#1d4ed8] transition-colors shadow-2xs"
+              >
+                <Plus className="w-4 h-4" />
+                <span>New Policy Document</span>
+              </button>
+
+              {gaps.length > 0 && (
+                <button
+                  onClick={() => setIsGapModalOpen(true)}
+                  className="w-full flex items-center justify-between py-2 px-3 rounded-lg bg-amber-50/70 border border-amber-200/80 text-amber-900 text-xs font-medium hover:bg-amber-100/70 transition-colors"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Documentation Gaps</span>
                   </div>
 
-                  <button
-                    onClick={e => {
-                      e.stopPropagation();
-                      handleViewDoc(doc.id);
-                    }}
-                    className="p-1 text-slate-400 hover:text-[#2563eb] rounded hover:bg-white transition-colors opacity-0 group-hover:opacity-100"
-                    title="View policy"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Quick Actions in Sidebar */}
-          <div className="px-4 mt-6 pt-4 border-t border-slate-100 space-y-2">
-            <button
-              onClick={() => {
-                setInitialDraftQuery(undefined);
-                setIsAddDocModalOpen(true);
-              }}
-              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-lg bg-[#2563eb] text-white text-xs font-semibold hover:bg-[#1d4ed8] transition-colors shadow-2xs"
-            >
-              <Plus className="w-4 h-4" />
-              <span>New Policy Document</span>
-            </button>
-
-            {gaps.length > 0 && (
-              <button
-                onClick={() => setIsGapModalOpen(true)}
-                className="w-full flex items-center justify-between py-2 px-3 rounded-lg bg-amber-50/70 border border-amber-200/80 text-amber-900 text-xs font-medium hover:bg-amber-100/70 transition-colors"
-              >
-                <div className="flex items-center gap-1.5">
-                  <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
-                  <span>Documentation Gaps</span>
-                </div>
-                <span className="px-1.5 py-0.2 rounded-full bg-amber-200/80 text-amber-950 font-bold text-[10px]">
-                  {gaps.length}
-                </span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Bottom User Clearance Badge */}
-        <div className="p-4 border-t border-slate-200 bg-white shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-slate-700 text-white shrink-0 flex items-center justify-center text-xs font-bold shadow-2xs">
-              JD
+                  <span className="px-1.5 py-0.5 rounded-full bg-amber-200/80 text-amber-950 font-bold text-[10px]">
+                    {gaps.length}
+                  </span>
+                </button>
+              )}
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-[13px] font-semibold text-slate-900 truncate">John Doe</div>
-              <div className="text-[11px] text-slate-400 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                <span>Security Clear: L3 Air-Gapped</span>
+          </div>
+
+          {/* Sidebar user clearance badge */}
+          <div className="p-4 border-t border-slate-200 bg-white shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-slate-700 text-white shrink-0 flex items-center justify-center text-xs font-bold shadow-2xs">
+                JD
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="text-[13px] font-semibold text-slate-900 truncate">
+                  John Doe
+                </div>
+
+                <div className="text-[11px] text-slate-400 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span>Security Clear: L3 Air-Gapped</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </aside>
       )}
 
-      {/* Main Content Area */}
+      {/* Main content */}
       <main className="flex-1 flex flex-col h-full min-w-0 relative bg-[#f8fafc] overflow-hidden">
-        {/* Clean Minimalism Header */}
         <Header
           docCount={documents.length}
           selectedDocCount={selectedDocIds.length}
@@ -435,11 +476,11 @@ export default function App() {
           isAdmin={isAdmin}
         />
 
-        {/* Chat Viewport */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-12 md:px-16 py-6 flex flex-col gap-5 custom-scrollbar">
+        {/* Chat viewport */}
+        <div className="flex-1 min-h-0 overflow-y-auto px-3 sm:px-8 md:px-16 py-4 sm:py-6 flex flex-col gap-4 sm:gap-5 custom-scrollbar">
           {messages.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center my-auto py-12">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-900 mb-5 flex items-center justify-center transition-transform hover:scale-105">
+            <div className="flex-1 flex flex-col items-center justify-center text-center my-auto py-8 sm:py-12">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden shadow-md border border-slate-200/80 bg-slate-900 mb-4 sm:mb-5 flex items-center justify-center transition-transform hover:scale-105">
                 <img
                   src="/chimobi_logo.jpg"
                   alt="JCIN UNIBEN Logo"
@@ -447,15 +488,16 @@ export default function App() {
                 />
               </div>
 
-              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                 JCIN UNIBEN
               </h2>
-              <p className="text-[15px] text-slate-500 max-w-sm mt-2 leading-relaxed font-medium">
+
+              <p className="text-sm sm:text-[15px] text-slate-500 max-w-sm mt-2 px-3 leading-relaxed font-medium">
                 How can I help you today?
               </p>
             </div>
           ) : (
-            <div className="space-y-4 max-w-4xl w-full mx-auto">
+            <div className="space-y-3 sm:space-y-4 max-w-4xl w-full mx-auto min-w-0">
               {messages.map(msg => (
                 <ChatMessageItem
                   key={msg.id}
@@ -467,26 +509,28 @@ export default function App() {
               ))}
 
               {isLoading && (
-                <div className="flex gap-3 max-w-[85%] items-start my-2">
-                  <div className="w-9 h-9 rounded-xl overflow-hidden shadow-xs border border-slate-200/80 bg-slate-900 flex items-center justify-center shrink-0">
+                <div className="flex gap-2.5 sm:gap-3 max-w-[96%] sm:max-w-[85%] items-start my-2 min-w-0">
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl overflow-hidden shadow-xs border border-slate-200/80 bg-slate-900 flex items-center justify-center shrink-0">
                     <img
                       src="/chimobi_logo.jpg"
                       alt="JCIN UNIBEN Logo"
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-3 text-xs text-slate-600">
+
+                  <div className="min-w-0 p-3 sm:p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center gap-2.5 sm:gap-3 text-xs text-slate-600">
                     <Loader2 className="w-4 h-4 text-[#2563eb] animate-spin shrink-0" />
                     <span>JCIN UNIBEN is thinking...</span>
                   </div>
                 </div>
               )}
+
               <div ref={messagesEndRef} />
             </div>
           )}
         </div>
 
-        {/* Preset Benchmark Drawer (Admin view only) */}
+        {/* Admin quick questions */}
         {isAdmin && (
           <PresetQueries
             onSelectQuery={q => {
@@ -497,10 +541,10 @@ export default function App() {
           />
         )}
 
-        {/* Floating Input Area (Chatbox) */}
-        <div className="px-4 sm:px-12 md:px-16 pt-2 pb-6 bg-gradient-to-t from-[#f8fafc] via-[#f8fafc]/95 to-transparent shrink-0">
+        {/* Message composer */}
+        <div className="px-3 sm:px-8 md:px-16 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pb-6 bg-gradient-to-t from-[#f8fafc] via-[#f8fafc]/95 to-transparent shrink-0">
           <div className="max-w-4xl mx-auto">
-            <div className="bg-white border border-slate-200/80 rounded-2xl p-2 sm:p-2.5 flex items-center gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.04)] focus-within:border-[#2563eb]/40 focus-within:ring-4 focus-within:ring-[#2563eb]/10 transition-all">
+            <div className="bg-white border border-slate-200/80 rounded-2xl p-1.5 sm:p-2.5 flex items-center gap-1.5 sm:gap-3 shadow-[0_4px_20px_rgba(0,0,0,0.04)] focus-within:border-[#2563eb]/40 focus-within:ring-4 focus-within:ring-[#2563eb]/10 transition-all">
               <textarea
                 ref={inputRef}
                 id="query-input"
@@ -510,26 +554,26 @@ export default function App() {
                 placeholder="Ask JCIN UNIBEN..."
                 rows={1}
                 disabled={isLoading}
-                className="flex-1 bg-transparent border-none outline-none text-[15px] text-slate-800 placeholder-slate-400 resize-none px-3 py-1.5 leading-relaxed custom-scrollbar"
+                className="flex-1 min-w-0 bg-transparent border-none outline-none text-base sm:text-[15px] text-slate-800 placeholder-slate-400 resize-none px-2 sm:px-3 py-2 sm:py-1.5 leading-relaxed custom-scrollbar"
               />
 
               <button
                 id="send-query-btn"
                 onClick={() => handleSendQuery(inputQuery)}
                 disabled={!inputQuery.trim() || isLoading}
-                className={`px-4 py-2.5 rounded-xl text-white font-semibold text-xs sm:text-[13px] transition-all flex items-center gap-1.5 shrink-0 ${
-                  !inputQuery.trim() || isLoading
+                className={`px-3 sm:px-4 py-3 sm:py-2.5 rounded-xl text-white font-semibold text-xs sm:text-[13px] transition-all flex items-center justify-center gap-1.5 shrink-0 min-w-11 ${!inputQuery.trim() || isLoading
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                     : 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-xs cursor-pointer'
-                }`}
+                  }`}
                 title="Send message (Enter)"
+                aria-label="Send message"
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
-                    <span>Send</span>
-                    <Send className="w-3.5 h-3.5" />
+                    <span className="hidden sm:inline">Send</span>
+                    <Send className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                   </>
                 )}
               </button>
@@ -538,7 +582,7 @@ export default function App() {
         </div>
       </main>
 
-      {/* Modals & Dialogs */}
+      {/* Modals and dialogs */}
       <KnowledgeBaseModal
         isOpen={isKbModalOpen}
         onClose={() => setIsKbModalOpen(false)}
