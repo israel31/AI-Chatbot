@@ -45,28 +45,32 @@ import { KnowledgeBaseModal } from './components/KnowledgeBaseModal';
 import { DocumentViewerModal } from './components/DocumentViewerModal';
 import { AddDocumentModal } from './components/AddDocumentModal';
 import { DocGapModal } from './components/DocGapModal';
+import {
+  listCustomDocuments,
+  saveCustomDocument,
+  deleteCustomDocument
+} from './lib/adminDocuments';
 
-const STORAGE_KEY_DOCS = 'company_docs_kb_v4';
 const STORAGE_KEY_GAPS = 'company_docs_gaps_v1';
 
 const CHATBOT_FUNCTION_URL =
   'https://eroogvrsmlfpcdmnvxsf.supabase.co/functions/v1/chatbot-query';
 
 export default function App() {
-  // Knowledge Base state
-  const [documents, setDocuments] = useState<DocumentItem[]>(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY_DOCS);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      console.error('Error reading saved docs:', e);
-    }
-    return DEFAULT_COMPANY_DOCUMENTS;
-  });
+  const isAdmin =
+    new URLSearchParams(window.location.search).get('role') === 'admin';
 
-  const [selectedDocIds, setSelectedDocIds] = useState<string[]>(() =>
-    documents.map(d => d.id)
+  // Built-in documents remain in the repository.
+  // Custom documents are loaded from Supabase.
+  const [documents, setDocuments] = useState<DocumentItem[]>(
+    DEFAULT_COMPANY_DOCUMENTS
   );
+
+  const [selectedDocIds, setSelectedDocIds] = useState<string[]>(
+    DEFAULT_COMPANY_DOCUMENTS.map(doc => doc.id)
+  );
+
+  const [documentsLoading, setDocumentsLoading] = useState(false);
 
   // Chat conversation state
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -80,8 +84,12 @@ export default function App() {
   const [isAddDocModalOpen, setIsAddDocModalOpen] = useState(false);
   const [isGapModalOpen, setIsGapModalOpen] = useState(false);
   const [viewingDoc, setViewingDoc] = useState<DocumentItem | null>(null);
-  const [highlightQuote, setHighlightQuote] = useState<string | undefined>(undefined);
-  const [initialDraftQuery, setInitialDraftQuery] = useState<string | undefined>(undefined);
+  const [highlightQuote, setHighlightQuote] = useState<string | undefined>(
+    undefined
+  );
+  const [initialDraftQuery, setInitialDraftQuery] = useState<string | undefined>(
+    undefined
+  );
 
   // Documentation gaps state
   const [gaps, setGaps] = useState<DocGapReport[]>(() => {
@@ -91,22 +99,71 @@ export default function App() {
     } catch (e) {
       console.error('Error reading saved gaps:', e);
     }
+
     return [];
   });
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Persist documents
+  // Load custom documents from Supabase for the admin interface.
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY_DOCS, JSON.stringify(documents));
-    } catch (e) {
-      console.error('Error saving docs:', e);
-    }
-  }, [documents]);
+    if (!isAdmin) return;
 
-  // Persist gaps
+    let cancelled = false;
+
+    const loadDocuments = async () => {
+      setDocumentsLoading(true);
+
+      try {
+        const customDocs = await listCustomDocuments();
+
+        if (cancelled) return;
+
+        setDocuments([
+          ...customDocs,
+          ...DEFAULT_COMPANY_DOCUMENTS,
+        ]);
+
+        setSelectedDocIds(prev => {
+          const validIds = new Set([
+            ...customDocs.map(doc => doc.id),
+            ...DEFAULT_COMPANY_DOCUMENTS.map(doc => doc.id),
+          ]);
+
+          const retained = prev.filter(id => validIds.has(id));
+          const selected = new Set(retained);
+
+          // Custom documents are included in the search scope by default.
+          customDocs.forEach(doc => selected.add(doc.id));
+
+          return Array.from(selected);
+        });
+      } catch (error) {
+        console.error('Failed to load custom documents:', error);
+
+        if (!cancelled) {
+          alert(
+            error instanceof Error
+              ? `Could not load documents from Supabase: ${error.message}`
+              : 'Could not load documents from Supabase.'
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setDocumentsLoading(false);
+        }
+      }
+    };
+
+    void loadDocuments();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
+
+  // Persist documentation gaps locally.
   useEffect(() => {
     try {
       localStorage.setItem(STORAGE_KEY_GAPS, JSON.stringify(gaps));
@@ -115,18 +172,25 @@ export default function App() {
     }
   }, [gaps]);
 
-  // Scroll to the latest message when the conversation changes
+  // Scroll to the latest message when the conversation changes.
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isLoading]);
 
-  // Handle query execution
+  // Handle query execution.
   const handleSendQuery = async (queryText: string) => {
     const trimmed = queryText.trim();
+
     if (!trimmed || isLoading) return;
 
-    // Filter documents by selected IDs
-    const activeDocs = documents.filter(d => selectedDocIds.includes(d.id));
+    if (documentsLoading) {
+      alert('Please wait for the knowledge base to finish loading.');
+      return;
+    }
+
+    const activeDocs = documents.filter(doc =>
+      selectedDocIds.includes(doc.id)
+    );
 
     if (activeDocs.length === 0) {
       alert(
@@ -153,16 +217,22 @@ export default function App() {
     try {
       const res = await fetch(CHATBOT_FUNCTION_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({
           query: trimmed,
           documents: activeDocs,
-          strictMode: strictMode,
+          strictMode,
         }),
       });
 
       if (!res.ok) {
-        throw new Error(`Server returned status ${res.status}`);
+        const errorBody = await res.json().catch(() => ({}));
+
+        throw new Error(
+          errorBody?.error || `Server returned status ${res.status}`
+        );
       }
 
       const data: QueryResponsePayload = await res.json();
@@ -174,7 +244,7 @@ export default function App() {
         timestamp: new Date().toISOString(),
         status: data.isGrounded ? 'grounded' : 'not_found',
         citations: data.citations || [],
-        searchedDocs: data.searchedDocs || activeDocs.map(d => d.title),
+        searchedDocs: data.searchedDocs || activeDocs.map(doc => doc.title),
         confidenceScore: data.confidence,
         gapAnalysis: data.gapAnalysis,
         filteredDocIds: selectedDocIds,
@@ -182,7 +252,7 @@ export default function App() {
 
       setMessages(prev => [...prev, assistantMsg]);
 
-      // Log unanswered questions as documentation gaps
+      // Log unanswered questions as documentation gaps.
       if (!data.isGrounded) {
         const newGap: DocGapReport = {
           id: `gap-${Date.now()}`,
@@ -197,14 +267,20 @@ export default function App() {
 
         setGaps(prev => [newGap, ...prev.slice(0, 49)]);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error during query:', err);
+
+      const message =
+        err instanceof Error
+          ? err.message
+          : 'Unable to connect to the internal document search service';
 
       const errorMsg: ChatMessage = {
         id: `msg-err-${Date.now()}`,
         role: 'assistant',
-        content: `**Error retrieving information:** ${err.message || 'Unable to connect to internal document search service'
-          }.\n\nPlease ensure your query is formulated clearly and retry.`,
+        content:
+          `**Error retrieving information:** ${message}.\n\n` +
+          'Please ensure your query is formulated clearly and retry.',
         timestamp: new Date().toISOString(),
         status: 'error',
       };
@@ -219,12 +295,12 @@ export default function App() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSendQuery(inputQuery);
+      void handleSendQuery(inputQuery);
     }
   };
 
   const handleViewDoc = (docId: string, quote?: string) => {
-    const doc = documents.find(d => d.id === docId);
+    const doc = documents.find(item => item.id === docId);
 
     if (doc) {
       setViewingDoc(doc);
@@ -232,39 +308,150 @@ export default function App() {
     }
   };
 
-  const handleAddDocument = (newDoc: DocumentItem) => {
-    setDocuments(prev => [newDoc, ...prev]);
-    setSelectedDocIds(prev => [newDoc.id, ...prev]);
+  // Save new documents to Supabase before adding them to the interface.
+  const handleAddDocument = async (
+    newDoc: DocumentItem
+  ): Promise<void> => {
+    try {
+      const savedDoc = await saveCustomDocument(newDoc);
+
+      setDocuments(prev => [
+        savedDoc,
+        ...prev.filter(doc => doc.id !== savedDoc.id),
+      ]);
+
+      setSelectedDocIds(prev =>
+        prev.includes(savedDoc.id)
+          ? prev
+          : [savedDoc.id, ...prev]
+      );
+    } catch (error) {
+      console.error('Failed to save document:', error);
+
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : 'Could not save the document to Supabase.'
+      );
+    }
   };
 
-  const handleUpdateDocument = (updatedDoc: DocumentItem) => {
-    setDocuments(prev =>
-      prev.map(d => (d.id === updatedDoc.id ? updatedDoc : d))
+  // Save document edits to Supabase and regenerate embeddings.
+  const handleUpdateDocument = async (
+    updatedDoc: DocumentItem
+  ): Promise<void> => {
+    const isBuiltIn = DEFAULT_COMPANY_DOCUMENTS.some(
+      doc => doc.id === updatedDoc.id
     );
 
-    if (viewingDoc && viewingDoc.id === updatedDoc.id) {
-      setViewingDoc(updatedDoc);
+    if (isBuiltIn || updatedDoc.isDefault) {
+      throw new Error('Built-in documents cannot be edited here.');
+    }
+
+    try {
+      const savedDoc = await saveCustomDocument(updatedDoc);
+
+      setDocuments(prev =>
+        prev.map(doc =>
+          doc.id === savedDoc.id ? savedDoc : doc
+        )
+      );
+
+      setViewingDoc(current =>
+        current?.id === savedDoc.id ? savedDoc : current
+      );
+    } catch (error) {
+      console.error('Failed to update document:', error);
+
+      throw new Error(
+        error instanceof Error
+          ? error.message
+          : 'Could not update the document in Supabase.'
+      );
     }
   };
 
-  const handleDeleteDocument = (docId: string) => {
+  // Delete custom documents from Supabase before removing them locally.
+  const handleDeleteDocument = async (
+    docId: string
+  ): Promise<void> => {
+    const doc = documents.find(item => item.id === docId);
+
+    const isBuiltIn = DEFAULT_COMPANY_DOCUMENTS.some(
+      item => item.id === docId
+    );
+
+    if (!doc || isBuiltIn || doc.isDefault) {
+      alert('Built-in documents cannot be deleted here.');
+      return;
+    }
+
     if (
-      confirm(
-        'Are you sure you want to remove this document from the knowledge base?'
+      !confirm(
+        'Are you sure you want to permanently delete this document from the knowledge base?'
       )
     ) {
-      setDocuments(prev => prev.filter(d => d.id !== docId));
-      setSelectedDocIds(prev => prev.filter(id => id !== docId));
+      return;
+    }
+
+    try {
+      await deleteCustomDocument(docId);
+
+      setDocuments(prev =>
+        prev.filter(item => item.id !== docId)
+      );
+
+      setSelectedDocIds(prev =>
+        prev.filter(id => id !== docId)
+      );
+
+      setViewingDoc(current =>
+        current?.id === docId ? null : current
+      );
+    } catch (error) {
+      console.error('Failed to delete document:', error);
+
+      alert(
+        error instanceof Error
+          ? `Could not delete document: ${error.message}`
+          : 'Could not delete the document from Supabase.'
+      );
     }
   };
 
+  // Reset built-in documents without deleting custom documents.
   const handleResetDefaults = () => {
     if (
-      confirm('Reset knowledge base to default corporate policy documents?')
+      !confirm(
+        'Reset the built-in documents to their original versions? Custom documents will be kept.'
+      )
     ) {
-      setDocuments(DEFAULT_COMPANY_DOCUMENTS);
-      setSelectedDocIds(DEFAULT_COMPANY_DOCUMENTS.map(d => d.id));
+      return;
     }
+
+    setDocuments(prev => [
+      ...prev.filter(
+        doc =>
+          !DEFAULT_COMPANY_DOCUMENTS.some(
+            builtIn => builtIn.id === doc.id
+          )
+      ),
+      ...DEFAULT_COMPANY_DOCUMENTS,
+    ]);
+
+    setSelectedDocIds(prev => {
+      const customSelected = prev.filter(
+        id =>
+          !DEFAULT_COMPANY_DOCUMENTS.some(
+            doc => doc.id === id
+          )
+      );
+
+      return [
+        ...DEFAULT_COMPANY_DOCUMENTS.map(doc => doc.id),
+        ...customSelected,
+      ];
+    });
   };
 
   const handleToggleSelectDoc = (id: string) => {
@@ -276,7 +463,7 @@ export default function App() {
   };
 
   const handleSelectAllDocs = () => {
-    setSelectedDocIds(documents.map(d => d.id));
+    setSelectedDocIds(documents.map(doc => doc.id));
   };
 
   const handleDeselectAllDocs = () => {
@@ -291,7 +478,7 @@ export default function App() {
   const handleReportGapManual = (query: string) => {
     const newGap: DocGapReport = {
       id: `gap-${Date.now()}`,
-      query: query,
+      query,
       timestamp: new Date().toISOString(),
       searchedDocCount: selectedDocIds.length,
       notes: 'Manually flagged as missing internal documentation',
@@ -302,17 +489,13 @@ export default function App() {
     alert('Logged query into Documentation Gap Tracker!');
   };
 
-  // Determine active context title for header
+  // Determine active context title for header.
   const activeContextName =
     selectedDocIds.length === 1
-      ? documents.find(d => d.id === selectedDocIds[0])?.title.split(',')[0]
+      ? documents.find(doc => doc.id === selectedDocIds[0])?.title.split(',')[0]
       : selectedDocIds.length === documents.length
         ? 'All Knowledge Bases'
         : `${selectedDocIds.length} Selected Policies`;
-
-  // Determine if admin view is active
-  const isAdmin =
-    new URLSearchParams(window.location.search).get('role') === 'admin';
 
   return (
     <div className="flex h-[100dvh] w-full overflow-hidden bg-[#f8fafc] text-slate-800 font-sans antialiased selection:bg-blue-100 selection:text-blue-900">
@@ -324,7 +507,7 @@ export default function App() {
         />
       )}
 
-      {/* Knowledge base sidebar: desktop panel and mobile drawer */}
+      {/* Knowledge base sidebar */}
       {isAdmin && (
         <aside
           className={`fixed md:static inset-y-0 left-0 z-50 w-[280px] h-full bg-white border-r border-slate-200 flex flex-col transition-transform duration-200 ease-in-out shrink-0 ${isMobileSidebarOpen
@@ -538,7 +721,7 @@ export default function App() {
           <PresetQueries
             onSelectQuery={q => {
               setInputQuery(q);
-              handleSendQuery(q);
+              void handleSendQuery(q);
             }}
             disabled={isLoading}
           />
@@ -562,16 +745,16 @@ export default function App() {
 
               <button
                 id="send-query-btn"
-                onClick={() => handleSendQuery(inputQuery)}
-                disabled={!inputQuery.trim() || isLoading}
-                className={`px-3 sm:px-4 py-3 sm:py-2.5 rounded-xl text-white font-semibold text-xs sm:text-[13px] transition-all flex items-center justify-center gap-1.5 shrink-0 min-w-11 ${!inputQuery.trim() || isLoading
+                onClick={() => void handleSendQuery(inputQuery)}
+                disabled={!inputQuery.trim() || isLoading || documentsLoading}
+                className={`px-3 sm:px-4 py-3 sm:py-2.5 rounded-xl text-white font-semibold text-xs sm:text-[13px] transition-all flex items-center justify-center gap-1.5 shrink-0 min-w-11 ${!inputQuery.trim() || isLoading || documentsLoading
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                     : 'bg-[#2563eb] hover:bg-[#1d4ed8] text-white shadow-xs cursor-pointer'
                   }`}
                 title="Send message (Enter)"
                 aria-label="Send message"
               >
-                {isLoading ? (
+                {isLoading || documentsLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
                   <>
