@@ -49,6 +49,9 @@ import { DocGapModal } from './components/DocGapModal';
 const STORAGE_KEY_DOCS = 'company_docs_kb_v4';
 const STORAGE_KEY_GAPS = 'company_docs_gaps_v1';
 
+const CHATBOT_FUNCTION_URL =
+  'https://eroogvrsmlfpcdmnvxsf.supabase.co/functions/v1/chatbot-query';
+
 export default function App() {
   // Knowledge Base state
   const [documents, setDocuments] = useState<DocumentItem[]>(() => {
@@ -148,7 +151,7 @@ export default function App() {
     setIsLoading(true);
 
     try {
-      const res = await fetch('/api/query', {
+      const res = await fetch(CHATBOT_FUNCTION_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
